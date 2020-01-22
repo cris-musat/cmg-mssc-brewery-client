@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import it.autostrade.web.models.BeerDto;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 @SpringBootTest
@@ -28,16 +29,21 @@ public class BreweryClientTest {
 	}
 
 	@Test
-	public void testSaveNewBeer() {
-		BeerDto beerDto = BeerDto.builder().uuid(UUID.randomUUID()).name("NEW_BEER").style("NEW_STYLE").ups((long) 999).build();
+	public void testSaveNewBeer() throws URISyntaxException {
+		BeerDto beerDto = BeerDto.builder().name("NEW_BEER_SAVE").build();
 		URI uri = client.saveNewBeer(beerDto);
-		//assertNotNull(uri);
+		assertNotNull(uri);
 		System.out.println(uri.toString());
 	}
 	
 	@Test
 	public void testUpdateBeer() {
-		BeerDto beerDto = BeerDto.builder().uuid(UUID.randomUUID()).name("NEW_BEER").style("NEW_STYLE").ups((long) 999).build();
+		BeerDto beerDto = BeerDto.builder().name("NEW_BEER_UPDATE").build();
 		client.updateBeer(UUID.randomUUID(), beerDto);
+	}
+	
+	@Test
+	public void testDeleteBeer() {
+		client.deleteBeer(UUID.randomUUID());
 	}
 }

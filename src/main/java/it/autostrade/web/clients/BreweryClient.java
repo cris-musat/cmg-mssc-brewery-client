@@ -1,6 +1,7 @@
 package it.autostrade.web.clients;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,7 +13,7 @@ import it.autostrade.web.models.BeerDto;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@ConfigurationProperties(value="sfg.brewery", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix ="sfg.brewery", ignoreUnknownFields = false)
 @Slf4j
 public class BreweryClient {
 
@@ -32,18 +33,30 @@ public class BreweryClient {
 		return restTemplate.getForObject(apihost + BEER_PATH_V1 + uuid.toString(), BeerDto.class);
 	}
 	
-	public URI saveNewBeer(BeerDto beerDto) {
+	public URI saveNewBeer(BeerDto beerDto) throws URISyntaxException {
 		log.info("__________________ IN saveNewBeer {}", beerDto.getUuid().toString());
 		log.info("__________________ IN saveNewBeer {}", beerDto.getName());
 		log.info("__________________ IN saveNewBeer {}", beerDto.getStyle());
 		log.info("__________________ IN saveNewBeer {}", beerDto.getUps());
-		//return restTemplate.postForLocation(apihost + BEER_PATH_V1 + beerDto.getUuid(), beerDto);
-		return null;
+		
+		URI x = null;
+		try {
+		x = restTemplate.postForLocation(apihost + BEER_PATH_V1, beerDto);
+		}
+		catch (Exception e) {
+			log.error("__________________ err_saveNewBeer: ", e);
+		}
+		return x;
 	}
 	
 	public void updateBeer(UUID uuid, BeerDto beerDto) {
 		log.info("__________________ IN updateBeer");
-		restTemplate.put(apihost + BEER_PATH_V1 + uuid.toString(), beerDto);
+		restTemplate.put(apihost + BEER_PATH_V1 + "/" + uuid.toString(), beerDto);
 		log.info("__________________ END updateBeer");
+	}
+	
+	public void deleteBeer(UUID uuid) {
+		// TODO Auto-generated method stub
+		restTemplate.delete(apihost + BEER_PATH_V1 + "/" + uuid.toString());
 	}
 }
